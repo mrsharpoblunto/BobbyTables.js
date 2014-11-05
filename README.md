@@ -1,6 +1,6 @@
 # BobbyTables.js
 
-[![Build Status](https://travis-ci.org/mrsharpoblunto/bobbytables.js.svg?branch=master)](https://travis-ci.org/mrsharpoblunto/bobbytables.js)
+[![Build Status](https://travis-ci.org/mrsharpoblunto/BobbyTables.js.svg?branch=master)](https://travis-ci.org/mrsharpoblunto/BobbyTables.js)
 
 ## API
 
