@@ -1,0 +1,36 @@
+{
+  "name": "bobbytables",
+  "version": "1.0.0",
+  "description": "BobbyTables.js is an ORM library for the Dropbox datastore for Nodejs. It handles serializing and deserializing objects to and from the remote Dropbox datastore as well as handling pushing/pulling updates",
+  "main": "./lib/index.js",
+  "dependencies": {
+    "request": "^2.47.0",
+    "shortid": "^2.1.2"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "del": "^0.1.1",
+    "gulp": "^3.8.5",
+    "gulp-browserify": "^0.5.0",
+    "gulp-uglify": "^0.3.1",
+    "mocha": "^1.20.1",
+    "gulp-rename": "^1.2.0"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha tests/tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrsharpoblunto/bobbytables.js.git"
+  },
+  "keywords": [
+    "dropbox",
+    "datastore"
+  ],
+  "author": "Glenn Conner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrsharpoblunto/bobbytables.js/issues"
+  },
+  "homepage": "https://github.com/mrsharpoblunto/bobbytables.js"
+}
