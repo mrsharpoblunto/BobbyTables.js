@@ -4,46 +4,46 @@
 
 ## API
 
-- DatastoreManager [#datastoremanager]
-    - get
-    - list
-    - awaitListChanges
-    - awaitDatastoreChanges
-    - getOrCreate
-    - create
-    - remove
-    - load
+- [DatastoreManager](#datastoremanager)
+    - [get](#getid-opts--callback)
+    - [list](#listopts-callback)
+    - [awaitListChanges](#awaitlistchangescallback)
+    - [awaitDatastoreChanges](#awaitdatastorechangescallback)
+    - [getOrCreate](#getorcreateid-opts-callback)
+    - [create](#createkey-callback)
+    - [remove](#removestorecallback)
+    - [load](#loadjsoncallback)
 
-- Datastore [#datastore]
-    - save
-    - revert
-    - pull
-    - awaitPull
-    - push
-    - transaction
-    - getTable
+- [Datastore](#datastore)
+    - [save](#save)
+    - [revert](#revert)
+    - [pull](#pullcallback)
+    - [awaitPull](#awaitpullcallback)
+    - [push](#pushcallback)
+    - [transaction](#transactionactions)
+    - [getTable](#gettableid)
 
-- Table [#table]
-    - insert
-    - remove
-    - get
-    - getAll
-    - update
+- [Table](#table)
+    - [insert](#insertobjectopts)
+    - [remove](#removeid)
+    - [get](#getid-opts)
+    - [getAll](#updateobject-opts)
+    - [update](#updateobject-opts)
 
 ## Usage
 
-- Inserting data
-- Using transactions
-- Saving and loading snapshots
-- Detecting changes
-- Details on object serialization
-- Advanced handling of object id's
+- [Inserting data](#inserting-data)
+- [Using transactions](#using-transactions)
+- [Saving and loading snapshots](#saving-and-loading-snapshots)
+- [Detecting changes](#detecting-changes)
+- [Details on object serialization](#details-on-object-serialization)
+- [Advanced handling of object id's](#advanced-handling-of-object-ids)
 
 ## DatastoreManager
 
 This object is used for retrieving [#datastore] objects from dropbox. To create a DatastoreManager you will need a Dropbox OAuth 2.0 bearer token (You can get this by completing an OAuth 2.0 handshake - see [https://www.dropbox.com/developers/core/docs#oa2-authorize](https://www.dropbox.com/developers/core/docs#oa2-authorize) for more details)
 
-```
+```javascript
 var BobbyTables = require('bobbytables');
 
 // A dropbox OAuth bearer token
@@ -58,7 +58,7 @@ Retrieves a [#datatore] with the given id, if no matching datastore could be fou
 - opts
     - forceRefresh (true/false) If true, calling get will always fetch the latest information from dropbox rather than using any locally cached data (defaults to false)
 
-```
+```javascript
 datastoreManager.get('iddqd',function(err,datastore) {
     if (err)GG {
         // something went wrong
@@ -76,7 +76,7 @@ Retrieves an array of all available [#datastore]s.
 - opts
     - forceRefresh (true/false) If true, calling get will always fetch the latest information from dropbox rather than using any locally cached data (defaults to false)
 
-```
+```javascript
 datastoreManager.list(function(err,datastores) {
     if (err) {
         // something went wrong
@@ -91,7 +91,7 @@ datastoreManager.list(function(err,datastores) {
 #### awaitListChanges(callback)
 Waits for dropbox to notify whether the list of available datastores has changed. The callback will either be called back with a value of true when a change occurs, or false if no changes were detected during the request timeout interval.
 
-```
+```javascript
 datastoreManager.awaitListChanges(function(err,changed) {
     if (err) {
         // something went wrong
@@ -106,7 +106,7 @@ datastoreManager.awaitListChanges(function(err,changed) {
 #### awaitDatastoreChanges(callback)
 Waits for dropbox to notify whether the contents of any datastore has changed. The callback will return with an array of all [#datastore] objects that have changed. If no changes were detected during the request timeout interval, then this array will be empty
 
-```
+```javascript
 datastoreManager.awaitDatastoreChanges(function(err,changes) {
     if (err) {
         // something went wrong
@@ -124,7 +124,7 @@ Retrieves a [#datastore] with the given id or creates it if it doesn't already e
 - opts
     - forceRefresh (true/false) If true, calling get will always fetch the latest information from dropbox rather than using any locally cached data (defaults to false)
 
-```
+```javascript
 datastoreManager.getOrCreate('iddqd',function(err,datastore) {
     if (err) {
         // something went wrong
@@ -137,7 +137,7 @@ datastoreManager.getOrCreate('iddqd',function(err,datastore) {
 #### create(key, callback)
 Creates a [#datastore] with a shareable ID. The key parameter is used to generate the shared ID which is returned along with the created datastore on success
 
-```
+```javascript
 datastoreManager.create('idkfa',function(err,response) {
     if (err) {
         // something went wrong
@@ -151,7 +151,7 @@ datastoreManager.create('idkfa',function(err,response) {
 #### remove(store,callback)
 Deletes the supplied [#datastore] object. The success callback returns true if the store was deleted
 
-```
+```javascript
 datastoreManager.remove(myStore,function(err,response) {
     if (err) [
         // something went wrong
@@ -166,7 +166,7 @@ datastoreManager.remove(myStore,function(err,response) {
 #### load(json,callback) 
 Load a serialized datastore in json (as output by Datastore.save) into a [#datastore] object
 
-```
+```javascript
 datastoreManager.load(json,function(err,store) {
     if (err) {
         // something went wrong
@@ -182,21 +182,21 @@ A datastore is an object which contains a number of tables containing dropbox da
 #### save()
 Saves the datastore as a json object
 
-```
+```javascript
 var json = store.save();
 ```
 
 #### revert()
 Reverts all pending local changes
 
-```
+```javascript
 store.revert();
 ```
 
 #### pull(callback) 
 Pulls in and applys to the datastore any remote changes from dropbox
 
-```
+```javascript
 store.pull(function(err,store) {
     if (err) {
         // something went wrong
@@ -209,7 +209,7 @@ store.pull(function(err,store) {
 #### awaitPull(callback)
 Wait for a remote change to occur and applies the changes if detected
 
-```
+```javascript
 store.awaitPull(function(err,changed) {
     if (err) {
         // something went wrong
@@ -224,7 +224,7 @@ store.awaitPull(function(err,changed) {
 #### push(callback)
 Push any local changes to dropbox
 
-```
+```javascript
 store.push(function(err,success) {
     if (err) {
         // something went wrong
@@ -239,8 +239,7 @@ store.push(function(err,success) {
 #### transaction(actions)
 Creates a [#transaction] object for this datastore
 
-```
-
+```javascript
 store.transaction(function(store,commit) {
 
     // ... make some changes to the datastore
@@ -264,7 +263,7 @@ store.transaction(function(store,commit) {
 #### getTable(id)
 Gets a table from the datastore or creates it if it doesn't exist
 
-```
+```javascript
 var table = store.getTable('cupcakes');
 ```
 
@@ -279,7 +278,7 @@ Insert a javascript object into the table.
     - idGetter: A function that returns the id value to be used to store the object in the table. If omitted it is assumed that there will be an 'id' field on the object.
     - idSetter: A function that sets the id property of the object (if no id is found via the idGetter). If omitted it is assumed that the id should be set on the objects 'id' field.
 
-```
+```javascript
 var object = {
     id: 'xxxx',
     description: 'hello world'
@@ -294,7 +293,7 @@ if (table.insert(object)) {
 #### remove(id)
 Remove an object with the matching id from the table
 
-```
+```javascript
 if (table.remove('xxxx')) {
     // object removed!
 } else {
@@ -308,7 +307,7 @@ Get an object stored in the table with the specified id
 - opts
     - idSetter: A function that sets the id property of the object to the id of the row. If omitted the objects 'id' field will be set to the id value
 
-```
+```javascript
 var object = table.get('xxxx');
 ```
 
@@ -318,7 +317,7 @@ Gets an array of all objects stored in the table
 - opts
     - idSetter: A function that sets the id property of the object to the id of the row. If omitted the objects 'id' field will be set to the id value
 
-```
+```javascript
 var objects = table.getAll();
 ```
 
@@ -328,7 +327,7 @@ Updates an existing object in the table. An error will occur if no object with t
 - opts
     - idGetter: A function that returns the id value to be used to store the object in the table. If omitted it is assumed that there will be an 'id' field on the object.
 
-```
+```javascript
 var object = {
     id: 'xxxx',
     description: 'hello world'
@@ -347,7 +346,7 @@ if (table.update(object)) {
 
 #### Inserting data
 
-```
+```javascript
 var BobbyTables = require('bobbytables');
 
 var manager = new BobbyTables('token');
@@ -373,7 +372,8 @@ manager.getOrCreate('food',function(err,store) {
 ```
 
 #### Using transactions
-```
+
+```javascript
 // every operation inside the transation will try to be pushed to Dropbox in a single
 // commit. If anything fails, all changes are reverted, the latest changes are pulled,
 // and the transaction will be re-applied until the commit succeeds or the number of
@@ -397,7 +397,8 @@ store.transaction(function(store,commit) {
 ```
 
 #### Saving and loading snapshots
-```
+
+```javascript
 // the local state of a datastore can be saved to a json object
 var json = store.save();
 
@@ -413,6 +414,7 @@ datastoreManager.load(json,function(err,store) {
 
 #### Detecting changes
 
+```javascript
 function awaitChanges(store)
 {
     store.awaitPull(function(err,changed) {
@@ -430,6 +432,7 @@ awaitChanges(store);
 ```
 
 #### Details on object serialization
+
 The dropbox datastore API only has support for the following datatypes so any objects that have fields with an unsupported datastype will not be able to be serialized correctly (Arrays of any of the below data types are also supported)
 
 Dropbox datatype | Javascript datatype
@@ -445,14 +448,14 @@ While BobbyTables will automatically look for an 'id' field on your objects when
 
 The way around this is to provide an id getter function which will return the value that should be used as the id for the object.
 
-```
+```javascript
 var table = store.getTable('fruit');
 table.insert({ 'name': 'banana' },{ idGetter: function(obj) { return obj.name; } });
 ```
 
 Similarly, you can provide an id setter function when deserializing/enumerating objects if the object you are dealing with does not have a public 'id' field
 
-```
+```javascript
 var table = store.getTable('fruit');
 var banana = table.get('banana',{ idGetter: function(obj,value) { obj.name = value; } });
 ```
