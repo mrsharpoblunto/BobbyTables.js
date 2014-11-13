@@ -1,5 +1,7 @@
 module.exports = {};
 
+var DEBUG = true;
+
 var mockApiRepository = {
     _urls: {}
 };
@@ -67,5 +69,14 @@ module.exports.MockApiRequest.prototype.getResponse = function(callback)
             return;
         }
     }
+    
+    if (DEBUG) {
+        var expected = []; 
+        for (var i = 0;i < request.responses.length; ++i) {
+            expected.push(request.responses[i].params);
+        }
+        console.log('Request params did not match expectations.\nWas: '+JSON.stringify(this._params)+'\nExpected one of: '+ JSON.stringify(expected));
+    }
+
     callback(null,{ statusCode: 500, body: null });
 };

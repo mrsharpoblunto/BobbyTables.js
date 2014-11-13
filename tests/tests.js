@@ -91,7 +91,7 @@ describe('BobbyTables',function() {
         });
     });
 
-    it('Can insert and data',function(done) {
+    it('Can pull and insert data',function(done) {
         mocks.mockApiRepository.addMockRequest(
             'POST',
             'get_or_create_datastore',
@@ -107,7 +107,7 @@ describe('BobbyTables',function() {
         mocks.mockApiRepository.addMockRequest(
             'POST',
             'put_delta',
-            {"handle":"3Cq5ybudNmPHeWygNSkf73xPF25kmC","rev":3,"changes":"[[\"I\",\"test\",\"xxx\",{\"id\":\"xxx\",\"intVal\":{\"I\":\"1\"},\"floatVal\":2.1,\"strVal\":\"hello\",\"dateVal\":{\"T\":\"0\"}}]]"},
+            {"handle":"3Cq5ybudNmPHeWygNSkf73xPF25kmC","rev":3,"changes":"[[\"I\",\"test\",\"xxx\",{\"id\":\"xxx\",\"intVal\":{\"I\":\"1\"},\"floatVal\":2.1,\"strVal\":\"hello\",\"dateVal\":{\"T\":\"0\"},\"buffer\":{\"B\":\"ZW5jb2RlZA\"},\"list\":[\"1\",\"2\",\"3\",\"4\"]}]]"},
             {"statusCode":200,"body":{"rev":4}});
 
         datastoreManager.getOrCreate('test',function(err,store) {
@@ -123,16 +123,25 @@ describe('BobbyTables',function() {
                 }
 
                 store.transaction(function(store,commit) {
-                    var table = store.getTable('test');
-                    table.insert({ 
-                        id: 'xxx',
-                        intVal: 1,
-                        floatVal: 2.1,
-                        strVal: 'hello',
-                        dateVal: new Date(0)
-                    });
+                    try 
+                    {
+                        var table = store.getTable('test');
+                        expect(table).to.exist
 
-                    commit();
+                        expect(table.insert({ 
+                            id: 'xxx',
+                            intVal: 1,
+                            floatVal: 2.1,
+                            strVal: 'hello',
+                            dateVal: new Date(0),
+                            buffer: new Buffer('encoded','utf8'),
+                            list: ['1','2','3','4']
+                        })).to.equal(true);
+                        commit();
+                    } 
+                    catch (err) {
+                        done(err);
+                    }
                 }).push({ retries: 1 },function(err,pushed) {
                     if (err) {
                         done(err);
@@ -146,7 +155,82 @@ describe('BobbyTables',function() {
                         expect(value.floatVal).to.equal(2.1);
                         expect(value.strVal).to.equal('hello');
                         expect(value.dateVal.getTime()).to.equal(0);
+                        expect(value.buffer.toString('utf8')).to.equal('encoded');
+                        expect(value.list.length).to.equal(4);
+                        done();
+                    } else {
+                        done('Could not push transaction data');
+                    }
+                });
+            });
+        });
+    });
 
+
+    it('Can pull and update data',function(done) {
+        mocks.mockApiRepository.addMockRequest(
+            'POST',
+            'get_or_create_datastore',
+            {"dsid":"test"},
+            {"statusCode":200,"body":{"handle": "3Cq5ybudNmPHeWygNSkf73xPF25kmC", "rev": 3, "created": false}});
+
+        mocks.mockApiRepository.addMockRequest(
+            'POST',
+            'get_snapshot',
+            {"handle":"3Cq5ybudNmPHeWygNSkf73xPF25kmC"},
+            {"statusCode":200,"body":{"rows":[{"tid":"testobjs","data":{"id":"1","intVal":{"I":"1"},"floatVal":2.1,"strVal":"hello","dateVal":{"T":"0"},"list":['a','b','c']},"rowid":"1"}],"rev":3}});
+
+        mocks.mockApiRepository.addMockRequest(
+            'POST',
+            'put_delta',
+            {"handle":"3Cq5ybudNmPHeWygNSkf73xPF25kmC","rev":3,"changes":"[[\"U\",\"testobjs\",\"1\",{\"intVal\":[\"P\",{\"I\":\"2\"}],\"list\":[\"LD\",1]}],[\"U\",\"testobjs\",\"1\",{\"list\":[\"LI\",1,\"d\"],\"newProperty\":[\"P\",\"a new property\"]}]]"},
+            {"statusCode":200,"body":{"rev":4}});
+
+        datastoreManager.getOrCreate('test',function(err,store) {
+            if (err) {
+                done(err);
+                return;
+            }
+
+            store.pull(function(err,store) {
+                if (err) {
+                    done(err);
+                    return;
+                }
+
+                store.transaction(function(store,commit) {
+                    try 
+                    {
+                        var table = store.getTable('testobjs');
+                        var value = table.get('1');
+                        expect(value).to.exist
+                        expect(value.intVal).to.equal(1);
+                        expect(value.floatVal).to.equal(2.1);
+                        expect(value.strVal).to.equal('hello');
+                        expect(value.dateVal.getTime()).to.equal(0);
+                        expect(JSON.stringify(value.list)).to.equal(JSON.stringify(['a','b','c']));
+
+                        value.newProperty = 'a new property';
+                        value.list.splice(1,1,'d');
+                        value.intVal = 2
+                        expect(table.update(value)).to.equal(true);
+
+                        commit();
+                    }
+                    catch (err) {
+                        done(err);
+                    }
+                }).push({ retries: 1 },function(err,pushed) {
+                    if (err) {
+                        done(err);
+                    }
+                    else if (pushed) {
+                        var table = store.getTable('testobjs');
+                        var value = table.get('1');
+                        expect(value).to.exist
+                        expect(value.newProperty).to.equal('a new property');
+                        expect(value.intVal).to.equal(2);
+                        expect(JSON.stringify(value.list)).to.equal(JSON.stringify(['a','d','c']));
                         done();
                     } else {
                         done('Could not push transaction data');
