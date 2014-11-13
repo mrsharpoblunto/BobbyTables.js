@@ -182,7 +182,7 @@ Retrieves a [Datastore](#datastore) with the given id, if no matching datastore 
 
 ```javascript
 datastoreManager.get('iddqd',function(err,datastore) {
-    if (err)GG {
+    if (err) {
         // something went wrong
     } else if (!datastore) {
         // no datastore with the specified id
