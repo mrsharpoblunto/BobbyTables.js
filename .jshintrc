@@ -1,0 +1,14 @@
+{
+    "newcap":true,
+    "eqeqeq":true,
+    "noarg":true,
+    "nonbsp":true,
+    "bitwise":true,
+    "forin":true,
+    "curly":true,
+    "latedef":true,
+    "noempty":true,
+    "undef":true,
+    "unused":true,
+    "node":true
+}
