@@ -1,5 +1,7 @@
 var gulp = require('gulp');
-
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
+var packageJSON = require('./package');
 var del = require('del');
 var uglify = require('gulp-uglify');
 var browserify = require('gulp-browserify');
@@ -17,8 +19,14 @@ gulp.task('build',['clean'],function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch',function() {
-	gulp.watch('lib/**/*', ['build']);
+gulp.task('lint',function() {
+    return gulp.src('lib/**/*.js')
+        .pipe(jshint(packageJSON.jshintConfig))
+        .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('default',['build']);
+gulp.task('watch',function() {
+	gulp.watch('lib/**/*', ['lint','build']);
+});
+
+gulp.task('default',['lint','build']);
