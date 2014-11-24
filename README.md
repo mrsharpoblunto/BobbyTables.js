@@ -83,6 +83,8 @@ store.transaction(function(store,commit) {
     
     // now try and commit the transaction
     commit();
+    // to cancel committing the transaction, pass an error argument to the commit function
+    //commit(new Error('Don\'t commit this transaction!'));
 }).push({ retries: 1 },function(err,pushed) {
     if (err) {
         // something went wrong
@@ -368,7 +370,8 @@ store.transaction(function(store,commit) {
     
     // now try and commit the transaction
     commit();
-
+    // to stop a transaction from being committed, pass an argument into the commit function
+    // commit(new Error('Don\'t commit this transation'));
 }).push({ retries: 1 },function(err,pushed) {
     if (err) {
         // something went wrong
