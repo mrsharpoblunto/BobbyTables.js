@@ -157,6 +157,18 @@ describe('BobbyTables',function() {
                         expect(value.dateVal.getTime()).to.equal(0);
                         expect(value.buffer.toString('utf8')).to.equal('encoded');
                         expect(value.list.length).to.equal(4);
+
+                        var values = table.getAll();
+                        expect(values.length).to.equal(1);
+                        value = values[0];
+                        expect(value).to.exist
+                        expect(value.id).to.equal('xxx');
+                        expect(value.intVal).to.equal(1);
+                        expect(value.floatVal).to.equal(2.1);
+                        expect(value.strVal).to.equal('hello');
+                        expect(value.dateVal.getTime()).to.equal(0);
+                        expect(value.buffer.toString('utf8')).to.equal('encoded');
+                        expect(value.list.length).to.equal(4);
                         done();
                     } else {
                         done('Could not push transaction data');
