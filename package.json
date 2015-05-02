@@ -1,6 +1,6 @@
 {
   "name": "bobbytables",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "BobbyTables.js is an ORM library for the Dropbox datastore for Nodejs. It handles serializing and deserializing objects to and from the remote Dropbox datastore as well as handling pushing/pulling updates",
   "main": "./lib/index.js",
   "dependencies": {
